@@ -58,7 +58,7 @@ interface AdminDashboardProps {
   suggestions: Suggestion[];
   adminUsers?: AdminUser[];
   auditLogs?: AuditLog[];
-  currentSessionAdmin?: AdminUser;
+  currentSessionAdmin?: AdminUser | null;
   onOpenBookDetail: (book: Book) => void;
   onOpenNewLoan: () => void;
   onOpenNewBook: () => void;
