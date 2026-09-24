@@ -1,0 +1,6 @@
+{
+  "name": "Biblioteca Maria Quitéria",
+  "description": "Sistema de gerenciamento e portal da Biblioteca Maria Quitéria com catálogo de livros, controle de empréstimos, relatórios e painel administrativo.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

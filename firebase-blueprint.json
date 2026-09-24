@@ -1,0 +1,146 @@
+{
+  "entities": {
+    "Book": {
+      "title": "Book",
+      "description": "Livro do acervo da biblioteca escolar",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "cover": { "type": "string" },
+        "category": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["disponivel", "reservado", "em_andamento"] },
+        "pages": { "type": "number" },
+        "year": { "type": "number" },
+        "publisher": { "type": "string" },
+        "location": { "type": "string" },
+        "synopsis": { "type": "string" },
+        "isbn": { "type": "string" },
+        "totalCopies": { "type": "number" },
+        "availableCopies": { "type": "number" },
+        "featured": { "type": "boolean" }
+      },
+      "required": ["id", "title", "author", "category", "status", "totalCopies", "availableCopies"]
+    },
+    "Loan": {
+      "title": "Loan",
+      "description": "Registro de empréstimo de livro para aluno",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentName": { "type": "string" },
+        "studentEmail": { "type": "string" },
+        "studentClass": { "type": "string" },
+        "bookId": { "type": "string" },
+        "bookTitle": { "type": "string" },
+        "bookAuthor": { "type": "string" },
+        "bookCover": { "type": "string" },
+        "loanDate": { "type": "string" },
+        "returnDate": { "type": "string" },
+        "actualReturnDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["devolvido", "em_andamento", "atrasado"] },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "studentName", "studentEmail", "bookId", "bookTitle", "loanDate", "returnDate", "status"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Estudante cadastrado na biblioteca escolar",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "class": { "type": "string" },
+        "phone": { "type": "string" },
+        "studentCode": { "type": "string" },
+        "avatar": { "type": "string" },
+        "activeLoansCount": { "type": "number" },
+        "totalLoansCount": { "type": "number" },
+        "joinedDate": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "class", "activeLoansCount", "totalLoansCount"]
+    },
+    "Suggestion": {
+      "title": "Suggestion",
+      "description": "Sugestão de leitura ou compra enviada por alunos",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentName": { "type": "string" },
+        "studentClass": { "type": "string" },
+        "bookTitle": { "type": "string" },
+        "author": { "type": "string" },
+        "category": { "type": "string" },
+        "reason": { "type": "string" },
+        "date": { "type": "string" },
+        "status": { "type": "string", "enum": ["pendente", "aprovado", "recusado"] }
+      },
+      "required": ["id", "studentName", "bookTitle", "author", "date", "status"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Usuário com permissão administrativa na biblioteca",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["superadmin", "bibliotecario", "assistente"] },
+        "roleLabel": { "type": "string" },
+        "avatar": { "type": "string" },
+        "pin": { "type": "string" },
+        "status": { "type": "string", "enum": ["ativo", "inativo"] },
+        "createdAt": { "type": "string" },
+        "lastLogin": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Registro de auditoria de operações realizadas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "adminId": { "type": "string" },
+        "adminName": { "type": "string" },
+        "adminAvatar": { "type": "string" },
+        "adminRole": { "type": "string" },
+        "actionCategory": { "type": "string" },
+        "title": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["id", "timestamp", "adminId", "adminName", "actionCategory", "title", "details"]
+    }
+  },
+  "firestore": {
+    "/books/{bookId}": {
+      "schema": "Book",
+      "description": "Coleção de livros disponíveis no catálogo compartilhado"
+    },
+    "/loans/{loanId}": {
+      "schema": "Loan",
+      "description": "Coleção de empréstimos ativos e históricos"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Coleção de estudantes e seus empréstimos"
+    },
+    "/suggestions/{suggestionId}": {
+      "schema": "Suggestion",
+      "description": "Coleção de sugestões de livros"
+    },
+    "/adminUsers/{adminId}": {
+      "schema": "AdminUser",
+      "description": "Coleção de administradores da biblioteca"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Coleção de registros de auditoria"
+    }
+  }
+}
