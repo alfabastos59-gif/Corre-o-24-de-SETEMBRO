@@ -41,6 +41,7 @@ import { Book, Loan, Student, Suggestion, AdminSection, ActiveTab, AdminUser, Au
 import { Logo } from './Logo';
 import { BackupRestoreView } from './BackupRestoreView';
 import { StudentModal } from './StudentModal';
+import { BookModal } from './BookModal';
 import { StudentHistoryModal } from './StudentHistoryModal';
 import { StudentCardModal } from './StudentCardModal';
 import { AdminUsersView } from './AdminUsersView';
@@ -63,6 +64,9 @@ interface AdminDashboardProps {
   onOpenNewLoan: () => void;
   onOpenNewBook: () => void;
   onOpenManageBooks?: () => void;
+  onSaveBook?: (updatedBook: Book) => void;
+  onCreateBook?: (newBook: Book) => void;
+  onDeleteBook?: (bookId: string) => void;
   onSaveStudent?: (student: Student) => void;
   onCreateStudent?: (student: Student) => void;
   onDeleteStudent?: (studentId: string) => void;
@@ -102,6 +106,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onOpenNewLoan,
   onOpenNewBook,
   onOpenManageBooks,
+  onSaveBook,
+  onCreateBook,
+  onDeleteBook,
   onSaveStudent,
   onCreateStudent,
   onDeleteStudent,
@@ -130,6 +137,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [suggestionSearchQuery, setSuggestionSearchQuery] = useState('');
   const [suggestionStatusFilter, setSuggestionStatusFilter] = useState<'all' | 'pendente' | 'aprovado' | 'recusado'>('all');
   const [filterCategory, setFilterCategory] = useState('all');
+
+  // Book management modal state
+  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  const [bookToEdit, setBookToEdit] = useState<Book | null>(null);
+  const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
   // Student management modal state
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
@@ -400,20 +412,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </button>
 
             {/* Quick Manage Books Button */}
-            {onOpenManageBooks && (
-              <button
-                id="btn-admin-header-manage-books"
-                onClick={onOpenManageBooks}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shadow-sm border ${
-                  isDark
-                    ? 'bg-[#092032] hover:bg-[#163650] text-emerald-400 border-[#163650]'
-                    : 'bg-white hover:bg-slate-50 text-emerald-700 border-slate-200'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Gerenciar Livros</span>
-              </button>
-            )}
+            <button
+              id="btn-admin-header-manage-books"
+              onClick={() => setAdminSection('livros')}
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shadow-sm border ${
+                isDark
+                  ? 'bg-[#092032] hover:bg-[#163650] text-emerald-400 border-[#163650]'
+                  : 'bg-white hover:bg-slate-50 text-emerald-700 border-slate-200'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Gerenciar Livros</span>
+            </button>
 
             {/* Quick Reports Button */}
             <button
@@ -612,20 +622,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <Clock className="w-3.5 h-3.5 text-amber-500" />
                   <span>Ver Empréstimos</span>
                 </button>
-                {onOpenManageBooks && (
-                  <button
-                    id="btn-quick-new-book"
-                    onClick={onOpenManageBooks}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all border ${
-                      isDark
-                        ? 'bg-[#001424] hover:bg-[#163650] text-slate-200 border-[#163650]'
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
-                    }`}
-                  >
-                    <BookOpen className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Gerenciar Livros</span>
-                  </button>
-                )}
+                <button
+                  id="btn-quick-new-book"
+                  onClick={() => setAdminSection('livros')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all border ${
+                    isDark
+                      ? 'bg-[#001424] hover:bg-[#163650] text-slate-200 border-[#163650]'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                  }`}
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Gerenciar Livros</span>
+                </button>
                 <button
                   id="btn-quick-new-student"
                   onClick={() => {
@@ -936,22 +944,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                {onOpenManageBooks && (
-                  <button
-                    id="btn-open-manage-books-modal"
-                    onClick={onOpenManageBooks}
-                    className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm border ${
-                      isDark
-                        ? 'bg-[#092032] hover:bg-[#163650] text-emerald-400 border-emerald-500/40'
-                        : 'bg-white hover:bg-slate-50 text-emerald-700 border-slate-200'
-                    }`}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    <span>Gerenciar Livros</span>
-                  </button>
-                )}
                 <button
-                  onClick={onOpenNewBook || onOpenManageBooks || (() => setActiveTab('catalogo'))}
+                  id="btn-admin-create-book"
+                  onClick={() => {
+                    setBookToEdit(null);
+                    setIsBookModalOpen(true);
+                  }}
                   className="px-4 py-2.5 rounded-xl bg-[#009b5a] hover:bg-[#00b368] text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md"
                 >
                   <Plus className="w-4 h-4" />
@@ -1019,21 +1017,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <td className={`py-3 px-4 font-mono text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{book.location}</td>
                           <td className="py-3 px-4 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              {onOpenManageBooks && (
-                                <button
-                                  onClick={onOpenManageBooks}
-                                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer border ${
-                                    isDark
-                                      ? 'bg-[#001424] hover:bg-[#163650] text-slate-300 hover:text-white border-[#163650]'
-                                      : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
-                                  }`}
-                                >
-                                  Alterar
-                                </button>
-                              )}
+                              <button
+                                id={`btn-edit-book-${book.id}`}
+                                onClick={() => {
+                                  setBookToEdit(book);
+                                  setIsBookModalOpen(true);
+                                }}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-all shadow-xs active:scale-95 ${
+                                  isDark
+                                    ? 'bg-[#001424] hover:bg-[#163650] text-emerald-400 hover:text-emerald-300 border-[#163650]'
+                                    : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                                }`}
+                                title="Alterar dados do livro"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                                <span>Alterar</span>
+                              </button>
+
+                              <button
+                                id={`btn-delete-book-${book.id}`}
+                                onClick={() => setBookToDelete(book)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-all shadow-xs active:scale-95 ${
+                                  isDark
+                                    ? 'bg-[#001424] hover:bg-rose-950/40 text-rose-400 hover:text-rose-300 border-rose-900/40'
+                                    : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                                }`}
+                                title="Excluir livro do acervo"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Excluir</span>
+                              </button>
+
                               <button
                                 onClick={() => onOpenBookDetail(book)}
-                                className="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold text-xs cursor-pointer"
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold text-xs cursor-pointer ml-1"
+                                title="Ver detalhes do livro"
                               >
                                 Detalhes
                               </button>
@@ -1831,6 +1849,81 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <AdminAuthorsView />
         )}
       </main>
+
+      {/* Modal de Gestão de Livros (Cadastro e Alteração) */}
+      <BookModal
+        isOpen={isBookModalOpen}
+        onClose={() => {
+          setIsBookModalOpen(false);
+          setBookToEdit(null);
+        }}
+        bookToEdit={bookToEdit}
+        onSaveBook={(savedBook) => {
+          if (bookToEdit) {
+            onSaveBook?.(savedBook);
+          } else {
+            onCreateBook ? onCreateBook(savedBook) : onSaveBook?.(savedBook);
+          }
+        }}
+      />
+
+      {/* Diálogo de Confirmação de Exclusão de Livro */}
+      {bookToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className={`w-full max-w-sm border rounded-2xl p-6 shadow-2xl space-y-4 ${
+            isDark ? 'bg-[#001f35] border-[#163e5e]' : 'bg-white border-slate-200'
+          }`}>
+            <div className="flex items-center gap-3">
+              <img
+                src={bookToDelete.cover}
+                alt={bookToDelete.title}
+                className={`w-11 h-16 rounded-lg object-cover border shrink-0 ${
+                  isDark ? 'border-[#163e5e]' : 'border-slate-200'
+                }`}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80';
+                }}
+              />
+              <div className="min-w-0">
+                <h4 className={`font-bold text-sm truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>Excluir Livro?</h4>
+                <p className={`text-xs truncate font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{bookToDelete.title}</p>
+                <p className={`text-[11px] truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{bookToDelete.author}</p>
+              </div>
+            </div>
+            <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Tem certeza que deseja remover este livro do acervo? Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                id="btn-cancel-delete-book"
+                onClick={() => setBookToDelete(null)}
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  isDark
+                    ? 'bg-[#0d2a40] hover:bg-[#163e5e] text-slate-300 hover:text-white'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                id="btn-confirm-delete-book"
+                onClick={() => {
+                  if (bookToDelete) {
+                    onDeleteBook?.(bookToDelete.id);
+                    setBookToDelete(null);
+                  }
+                }}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors cursor-pointer shadow-lg shadow-rose-900/30"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Gestão de Usuários Administradores */}
       <AdminUserModal

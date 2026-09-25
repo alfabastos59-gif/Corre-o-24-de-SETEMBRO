@@ -1078,6 +1078,9 @@ export default function App() {
             }}
             onOpenNewBook={() => setIsRegisterBookOpen(true)}
             onOpenManageBooks={() => setIsManageBooksOpen(true)}
+            onSaveBook={handleSaveBook}
+            onCreateBook={handleCreateBook}
+            onDeleteBook={handleDeleteBook}
             onSaveStudent={handleSaveStudent}
             onCreateStudent={handleCreateStudent}
             onDeleteStudent={handleDeleteStudent}

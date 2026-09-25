@@ -30,7 +30,7 @@ export const StudentPortalView: React.FC<StudentPortalViewProps> = ({
     const lCode = (l.studentCode || '').replace(/^ALU-/, '');
     return (
       (studentCode && lCode === studentCode) ||
-      (l.studentEmail && l.studentEmail.toLowerCase() === student.email.toLowerCase()) ||
+      (l.studentEmail && student.email && l.studentEmail.toLowerCase() === student.email.toLowerCase()) ||
       l.studentName.toLowerCase() === student.name.toLowerCase()
     );
   });

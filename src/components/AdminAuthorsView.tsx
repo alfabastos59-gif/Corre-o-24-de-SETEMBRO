@@ -96,7 +96,7 @@ export const AdminAuthorsView: React.FC = () => {
       const q = searchQuery.toLowerCase();
 
       const nameMatch = author.name.toLowerCase().includes(q);
-      const tagMatch = author.tag.toLowerCase().includes(q);
+      const tagMatch = author.tag ? author.tag.toLowerCase().includes(q) : false;
       const roleMatch = author.role && author.role.toLowerCase().includes(q);
       const periodMatch = author.period && author.period.toLowerCase().includes(q);
       const quoteMatch = author.featuredQuote.toLowerCase().includes(q);

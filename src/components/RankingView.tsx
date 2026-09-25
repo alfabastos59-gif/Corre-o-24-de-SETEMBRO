@@ -89,7 +89,7 @@ export const RankingView: React.FC<RankingViewProps> = ({
             ? `ALU-${matchedStudent.studentCode.replace(/^ALU-/, '')}`
             : item.studentCode
             ? (item.studentCode.startsWith('ALU-') ? item.studentCode : `ALU-${item.studentCode}`)
-            : `ALU-${item.studentId.toUpperCase()}`,
+            : `ALU-${(item.studentId || item.studentName || '001').toUpperCase()}`,
           name: matchedStudent?.name || item.studentName,
           className: matchedStudent?.class || 'Ensino Fundamental/Médio',
           avatar:

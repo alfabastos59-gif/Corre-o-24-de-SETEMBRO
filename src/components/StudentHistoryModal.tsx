@@ -24,7 +24,7 @@ export const StudentHistoryModal: React.FC<StudentHistoryModalProps> = ({
     (l) =>
       l.studentName.toLowerCase().trim() === student.name.toLowerCase().trim() ||
       (student.studentCode && l.studentCode === student.studentCode) ||
-      (student.email && l.studentEmail.toLowerCase() === student.email.toLowerCase())
+      (student.email && l.studentEmail && l.studentEmail.toLowerCase() === student.email.toLowerCase())
   );
 
   const activeLoans = studentLoans.filter((l) => l.status !== 'devolvido');
